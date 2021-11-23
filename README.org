@@ -114,17 +114,6 @@ Postgresql is the best open source relational database.
 
 ** Building the project locally
 
-- Add the following entry to your ~/etc/hosts~ file:
-
-  #+begin_src sh
-  127.0.0.1 postgres
-  #+end_src
-
-  The procedure above is intended to simplify your life. If you do it,
-  then you can use the same connection string on your local
-  environment as well as on CI (where the host is postgres by
-  default).
-
 - Start the database
 
 #+begin_src

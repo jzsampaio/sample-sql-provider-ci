@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -ex
+
 # clear the repo from non commited changes
 git clean -xdf
 
@@ -11,7 +13,7 @@ dotnet tool restore \
 docker stop $(docker ps -a -q) && docker system prune -f && docker volume prune -f
 
 # start dev and compile time database
-docker-compose -f docker-compose.yml up -d database
+docker-compose -f docker-compose.yml up -d postgres
 
 sh/migrate.sh
 
