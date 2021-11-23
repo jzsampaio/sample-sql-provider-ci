@@ -1,0 +1,33 @@
+version: "3.9"
+services:
+  runtime-database:
+    image: postgres:12.6
+    restart: always
+    container_name: model-marketplace-database
+    environment:
+      - POSTGRES_PASSWORD=pgpass
+      - POSTGRES_USER=dbuser
+      - POSTGRES_DB=sample-sqlprovider
+    ports:
+      - 5433:5432
+
+  compile-database:
+    image: postgres:12.6
+    restart: always
+    container_name: postgres
+    environment:
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - 5432:5432
+    networks:
+      - subnet
+
+  database-admin:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
+    networks:
+      - subnet

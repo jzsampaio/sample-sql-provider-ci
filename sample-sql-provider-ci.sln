@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{26923B22-484
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "SampleSQLProviderApp", "src\SampleSQLProviderApp\SampleSQLProviderApp.fsproj", "{87C1EFA2-F556-4DB3-AD59-9096A0A4813F}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Migrations", "src\Migrations\Migrations.fsproj", "{784B3306-FF30-44C2-932F-197636C59CD5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,8 +34,21 @@ Global
 		{87C1EFA2-F556-4DB3-AD59-9096A0A4813F}.Release|x64.Build.0 = Release|Any CPU
 		{87C1EFA2-F556-4DB3-AD59-9096A0A4813F}.Release|x86.ActiveCfg = Release|Any CPU
 		{87C1EFA2-F556-4DB3-AD59-9096A0A4813F}.Release|x86.Build.0 = Release|Any CPU
+		{784B3306-FF30-44C2-932F-197636C59CD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{784B3306-FF30-44C2-932F-197636C59CD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{784B3306-FF30-44C2-932F-197636C59CD5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{784B3306-FF30-44C2-932F-197636C59CD5}.Debug|x64.Build.0 = Debug|Any CPU
+		{784B3306-FF30-44C2-932F-197636C59CD5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{784B3306-FF30-44C2-932F-197636C59CD5}.Debug|x86.Build.0 = Debug|Any CPU
+		{784B3306-FF30-44C2-932F-197636C59CD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{784B3306-FF30-44C2-932F-197636C59CD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{784B3306-FF30-44C2-932F-197636C59CD5}.Release|x64.ActiveCfg = Release|Any CPU
+		{784B3306-FF30-44C2-932F-197636C59CD5}.Release|x64.Build.0 = Release|Any CPU
+		{784B3306-FF30-44C2-932F-197636C59CD5}.Release|x86.ActiveCfg = Release|Any CPU
+		{784B3306-FF30-44C2-932F-197636C59CD5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{87C1EFA2-F556-4DB3-AD59-9096A0A4813F} = {26923B22-4847-489B-A5CB-FB45439279A3}
+		{784B3306-FF30-44C2-932F-197636C59CD5} = {26923B22-4847-489B-A5CB-FB45439279A3}
 	EndGlobalSection
 EndGlobal
