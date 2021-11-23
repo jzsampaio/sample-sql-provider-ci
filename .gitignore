@@ -1,3 +1,4 @@
 **/.paket
 packages/
 **/obj
+**/bin

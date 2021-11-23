@@ -1,20 +1,25 @@
-module Program
+module Result =
 
-open Migrations.RuntimeMigrate
-open Server.Shared.Extensions
-open Server.Shared.EnvironmentConfiguration
+    let runEffect okFn errorFn =
+        function
+        | Ok value -> okFn value
+        | Error failure -> errorFn failure
 
-let logSuccess () = printfn "Database migration succeeded."
+module Program = 
 
-let logError =
-    function
-    | UnsuccessfulUpgrade msg -> eprintfn "Could not migrate the database due to: %s" msg
-    | DeploymentError msg -> eprintfn "Error while performing database migration: %s" msg
+    open Migrations.RuntimeMigrate
 
-[<EntryPoint>]
-let main _ =
-    readConnectionStringFromEnvVar ()
-    |> migrateToLatest
-    |> Result.runEffect logSuccess logError
+    let logSuccess () = printfn "Database migration succeeded."
 
-    0
+    let logError =
+        function
+        | UnsuccessfulUpgrade msg -> eprintfn "Could not migrate the database due to: %s" msg
+        | DeploymentError msg -> eprintfn "Error while performing database migration: %s" msg
+
+    [<EntryPoint>]
+    let main _ =
+        (sprintf "Host=%s;Port=%s;Username=%s;Password=%s;Database=%s" "127.0.0.1" "5433" "dbuser" "admin" "demo")
+        |> migrateToLatest
+        |> Result.runEffect logSuccess logError
+
+        0

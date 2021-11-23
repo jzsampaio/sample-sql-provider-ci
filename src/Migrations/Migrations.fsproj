@@ -6,6 +6,8 @@
     <WarnOn>3390;$(WarnOn)</WarnOn>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Scripts\*.sql"/>    
+    <Compile Include="RuntimeMigrate.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
