@@ -17,7 +17,7 @@ the F# compiler infers a type from samples of the data.
 F# ships with a few type providers. To name a few: csv, json, xmls,
 and sql.
 
-** Strongly Type SQL
+** Strongly Typed SQL
 
 By using an SQL type provider, instead of writing your SQL queries as
 strings, one can write them w/ F#'s computation expressions.
@@ -40,12 +40,19 @@ data. This is easy with a csv and json: you just point it to a file
 committed on the repository.
 
 For a SQL type providers, you need to grant the compiler access to a
-running database. Furthermore, the database must have the schema that
-you expect to read on CI. This is easily done on the developer
-environment, but what about CI environments? Finally, how to build a
-Docker image of a source code that requires a running database in
-order for compile? The remaining of this document tries to address
-these problems.
+running database.
+
+I will write this again: your compiler needs read access to a running
+database.
+
+Furthermore, the database must have the schema that you expect to read
+on CI. This is easily done on the developer environment, but what
+about CI environments? Finally, how to build a Docker image of a
+source code that requires a running database in order for compile?
+
+These questions have prohibited our team from bringing sql type
+providers to production for a while. We have worked out our solution,
+which is described on the remaining of this document.
 
 ** 2 Databases
 
@@ -67,6 +74,39 @@ have the compile time database use strong credentials, so we opted to
 leave the connection string for this database directly on the source
 code.
   
+** The Stack
+
+*** Dotnet core
+
+The instructions on this manual were tested on dotnet 5.0.400. I
+expect the instructions to work on later versions of net5, but I
+expect some changes to be necessary.
+
+*** F#
+
+The technology vision of our team specifically states that we seek to
+leverage Hindley-Milner type systems as business value to the best of
+our capabilities. We want compilers to help programmers write better
+software at cheaper implementation costs. We are big enthusiasts of
+strongly typed function programming. We appreciate the fact that F#
+bridges modern research in programming languages and the time tested
+.NET platform.
+
+*** DbUp
+
+We use [[https://dbup.readthedocs.io/en/latest/][DbUp]] to run our migrations. DbUp is a dotnet library for
+running migrations written in SQL files. The project ~src/Migrations~
+uses it to expose:
+
+- A command line tool that runs migrations
+- A library that can be called from our main application in order to
+  run migrations during runtime.
+
+*** Postgres
+
+We prefer relational databases over non relational ones. We think
+Postgresql is the best open source relational database.
+
 ** Building the project locally
 
 - Start the runtime database
@@ -100,4 +140,50 @@ dotnet build
 #+end_src
 
 ** Building the project on CI
+
+This repo contains CI instructions for Gitlab and Github.
+
 ** Building a Docker image
+
+One often builds docker image with the command:
+
+#+begin_src sh
+docker build
+#+end_src
+
+The command above fetches a base image and executes the commands
+outlined on Dockerfile one by one - each one building a new docker
+layer. The docker image we want to deploy is the final layer produced
+by this process.
+
+However, when executing the commands above, we need the dotnet
+compiler to have access to a running database.
+
+We could not figure out if it makes to try to solve this problem with
+Docker or not. We solved it by having the host machine build the
+dotnet .DLL, and then copying these assets into the docker image.
+
+We created a script that will:
+
+- Clear the environment of the host machine (changes to the repo as
+  well as running containers)
+- Start runtime and compile time database
+- Apply migrations to runtime database
+- Export schema from runtime database
+- Apply the schema on the compile time database
+- Publish the dotnet executable assets
+- Build the docker image
+    * The dockerfile has a command that copies executable assets from
+      the host machine into the Docker image
+
+From the root of the repo execute:
+
+#+begin_src sh
+sh/build-docker-image.sh
+#+end_src
+
+You can run the app from the docker container with:
+
+#+begin_src sh
+docker run -it --rm sqlprovider-demo:2021.11.23-17.39.35 /app/build/SampleSQLProviderApp
+#+end_src
