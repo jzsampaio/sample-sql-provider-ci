@@ -1,0 +1,84 @@
+#+TITLE:  Sample CI for F# Project w/ SQL Type Provider
+
+This repo contains a sample CI configuration that allows an fsharp
+project w/ sql provider to:
+
+- build on CI
+- build a docker image
+
+* Background
+
+F#'s type providers allows for usage of strong types when accessing
+structured data. Different than traditional ORMs that require the
+programmer to manually specify the type with which to read the data,
+the F# compiler infers a type from samples of the data.
+
+F# ships with a few type providers. To name a few: csv, json, xmls,
+and rdbms.
+
+Note however, that the compiler must have access to samples of the
+data. This is easy with a csv and json: you just point it to a file
+committed on the repository.
+
+For SQL type providers, you need to grant the compiler access to a
+running database. Furthermore, the database must have the schema that
+you expect to read on CI. This is easily done on the developer
+environment, but what about CI environments? Finally, how to build a
+Docker image of a source code that requires a running database in
+order for compile? The remaining of this document tries to address
+these problems.
+
+** 2 Databases
+
+Our solution to this problem uses 2 databases.
+
+- Runtime database :: this is the database that you produce by running
+  the migrations. On production, this contains your real data. The
+  credentials for this database are strong (usually read from secret
+  vaults during runtime).
+- Compile time database :: this is a database that has a copy of the
+  schema. It must be accessed by the compiler. The credentials for
+  this database are written on the source code.
+
+The 2 database solution emerged out of the necessity of having hard
+coded connection strings on the source code. Recall: every time you
+need the compiler, you need to access the database. Your auto complete
+needs it, your test suite as well. We could not figure out a way to
+have the compile time database use strong credentials, so we opted to
+leave the connection string for this database directly on the source
+code.
+  
+** Building the project locally
+
+- Start the runtime database
+
+#+begin_src
+docker-compose up -d runtime-database
+#+end_src
+
+- Run migrations
+
+#+begin_src
+dotnet run -p src/Migrations 
+#+end_src
+
+- Create an sql dump of your schema
+
+#+begin_src 
+PGPASSWORD=admin pg_dump -U dbuser -h 127.0.0.1 -p 5433 -d demo -s -c -x -O --no-comments > db-schema.sql  
+#+end_src
+
+- Load the sql dump on the compile time database
+
+#+begin_src 
+PGPASSWORD=admin psql -d postgres -U postgres < db-schema.sql  
+#+end_src
+
+- You can now build your project with:
+
+#+begin_src
+dotnet build
+#+end_src
+
+** Building the project on CI
+** Building a Docker image
