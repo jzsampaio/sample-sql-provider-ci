@@ -54,7 +54,7 @@ These questions have prohibited our team from bringing sql type
 providers to production for a while. We have worked out our solution,
 which is described on the remaining of this document.
 
-** 2 Databases
+** 2 Databases on our production solution
 
 Our solution to this problem uses 2 databases.
 
@@ -73,7 +73,12 @@ needs it, your test suite as well. We could not figure out a way to
 have the compile time database use strong credentials, so we opted to
 leave the connection string for this database directly on the source
 code.
-  
+
+The solution above is what we use on production. On this sample
+project however, we have simplified a bit and use a single database.
+When porting to your production app, make sure to differentiate betwee
+compile and runtime database.
+
 ** The Stack
 
 *** Dotnet core
@@ -109,28 +114,34 @@ Postgresql is the best open source relational database.
 
 ** Building the project locally
 
-- Start the runtime database
+- Add the following entry to your ~/etc/hosts~ file:
+
+  #+begin_src sh
+  127.0.0.1 postgres
+  #+end_src
+
+  The procedure above is intended to simplify your life. If you do it,
+  then you can use the same connection string on your local
+  environment as well as on CI (where the host is postgres by
+  default).
+
+- Start the database
 
 #+begin_src
-docker-compose up -d runtime-database
+docker-compose up -d postgres
 #+end_src
 
-- Run migrations
+- Install dependencies
+
+#+begin_src
+dotnet tool restore
+dotnet paket restore
+#+end_src
+
+- Apply the migrations
 
 #+begin_src
 dotnet run -p src/Migrations 
-#+end_src
-
-- Create an sql dump of your schema
-
-#+begin_src 
-PGPASSWORD=admin pg_dump -U dbuser -h 127.0.0.1 -p 5433 -d demo -s -c -x -O --no-comments > db-schema.sql  
-#+end_src
-
-- Load the sql dump on the compile time database
-
-#+begin_src 
-PGPASSWORD=admin psql -d postgres -U postgres -h 127.0.0.1 -p 5432 < db-schema.sql
 #+end_src
 
 - You can now build your project with:
@@ -141,7 +152,13 @@ dotnet build
 
 ** Building the project on CI
 
-This repo contains CI instructions for Gitlab and Github.
+This repo contains CI instructions for [[./.github/workflows/dotnet.yml][Github]].
+
+The trick is that you need to:
+
+- Declare a postgres service that will accept the same connection
+  string that you use on your development environment
+- Run the migrations before building your project
 
 ** Building a Docker image
 
@@ -167,10 +184,8 @@ We created a script that will:
 
 - Clear the environment of the host machine (changes to the repo as
   well as running containers)
-- Start runtime and compile time database
-- Apply migrations to runtime database
-- Export schema from runtime database
-- Apply the schema on the compile time database
+- Start a clean database
+- Apply migrations 
 - Publish the dotnet executable assets
 - Build the docker image
     * The dockerfile has a command that copies executable assets from
@@ -186,4 +201,22 @@ You can run the app from the docker container with:
 
 #+begin_src sh
 docker run -it --rm sqlprovider-demo:2021.11.23-17.39.35 /app/build/SampleSQLProviderApp
+#+end_src
+
+** Porting schema from runtime databse into compile time database
+
+We use the following commands to transfer the schema from production
+database (on these commands, assumed to run on port 5432) into the
+compile database (5433).
+
+- Create an sql dump of your schema
+
+#+begin_src 
+PGPASSWORD=admin pg_dump -U dbuser -h 127.0.0.1 -p 5432 -d demo -s -c -x -O --no-comments > db-schema.sql  
+#+end_src
+
+- Load the sql dump on the compile time database
+
+#+begin_src 
+PGPASSWORD=admin psql -d postgres -U postgres -h 127.0.0.1 -p 5433 < db-schema.sql
 #+end_src

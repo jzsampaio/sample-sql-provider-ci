@@ -8,7 +8,7 @@ type Action =
 
 [<Literal>]
 let private CompileTimeConnection =
-    "Host=127.0.0.1;Port=5432;Username=postgres;Password=admin;Database=postgres;"
+    "Host=postgres;Port=5432;Username=postgres;Password=admin;Database=postgres;"
 
 type Schema =
     SqlDataProvider<ConnectionString=CompileTimeConnection, DatabaseVendor=Common.DatabaseProviderTypes.POSTGRESQL>

@@ -1,15 +1,6 @@
 version: "3.9"
 services:
-  runtime-database:
-    image: postgres:12.6
-    environment:
-      - POSTGRES_PASSWORD=admin
-      - POSTGRES_USER=dbuser
-      - POSTGRES_DB=demo
-    ports:
-      - 5433:5432
-
-  compile-database:
+  postgres:
     image: postgres:12.6
     environment:
       - POSTGRES_PASSWORD=admin

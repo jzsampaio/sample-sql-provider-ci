@@ -18,7 +18,7 @@ module Program =
 
     [<EntryPoint>]
     let main _ =
-        (sprintf "Host=%s;Port=%s;Username=%s;Password=%s;Database=%s" "127.0.0.1" "5433" "dbuser" "admin" "demo")
+        (sprintf "Host=%s;Port=%s;Username=%s;Password=%s;Database=%s" "postgres" "5432" "postgres" "admin" "postgres")
         |> migrateToLatest
         |> Result.runEffect logSuccess logError
 
