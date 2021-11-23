@@ -189,7 +189,7 @@ sh/build-docker-image.sh
 You can run the app from the docker container with:
 
 #+begin_src sh
-docker run -it --rm sqlprovider-demo:2021.11.23-17.39.35 /app/build/SampleSQLProviderApp
+docker run -it --rm sqlprovider-demo:latest /app/build/SampleSQLProviderApp
 #+end_src
 
 ** Porting schema from runtime databse into compile time database

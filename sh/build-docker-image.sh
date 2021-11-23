@@ -19,8 +19,6 @@ sh/migrate.sh
 
 dotnet publish -c Release -o dotnet-build
 
-SHORT_SHA=$(git rev-parse --short=16 HEAD)
-LAST_COMMIT_DT=$(git log -1 --format="%at" | xargs -I{} date -d @{} +%Y.%m.%d-%H.%M.%S)
-DEPLOYMENT_TAG=sqlprovider-demo:${LAST_COMMIT_DT}
+DEPLOYMENT_TAG=sqlprovider-demo:latest
 
 docker build -f Dockerfile . -t ${DEPLOYMENT_TAG}
