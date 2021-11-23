@@ -6,7 +6,7 @@
     <WarnOn>3390;$(WarnOn)</WarnOn>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Scripts\*.sql"/>    
+    <EmbeddedResource Include="sql\*.sql"/>    
     <Compile Include="RuntimeMigrate.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
