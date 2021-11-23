@@ -2,5 +2,5 @@ source https://www.nuget.org/api/v2
 
 nuget dbup-postgresql
 nuget FSharp.Data
-nuget Npgsql
+nuget Npgsql 6.0.0-preview2 preview
 nuget SQLProvider

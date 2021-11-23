@@ -1,3 +1,4 @@
+FSharp.Core
 FSharp.Data
-Npgsql
 SQLProvider
+Npgsql

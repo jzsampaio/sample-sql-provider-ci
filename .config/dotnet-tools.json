@@ -2,16 +2,16 @@
   "version": 1,
   "isRoot": true,
   "tools": {
-    "paket": {
-      "version": "6.2.1",
-      "commands": [
-        "paket"
-      ]
-    },
     "fantomas-tool": {
       "version": "4.5.8",
       "commands": [
         "fantomas"
+      ]
+    },
+    "paket": {
+      "version": "6.0.0-alpha055",
+      "commands": [
+        "paket"
       ]
     }
   }

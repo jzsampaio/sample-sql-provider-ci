@@ -5,7 +5,7 @@ module Result =
         | Ok value -> okFn value
         | Error failure -> errorFn failure
 
-module Program = 
+module Program =
 
     open Migrations.RuntimeMigrate
 

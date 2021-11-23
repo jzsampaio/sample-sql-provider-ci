@@ -1,8 +1,21 @@
 open System
 
+open FSharp.Data.Sql
+
 type Action =
     | NewUser of char
     | Print
+
+[<Literal>]
+let private CompileTimeConnection =
+    "Host=127.0.0.1;Port=5432;Username=postgres;Password=admin;Database=postgres;"
+
+type Schema =
+    SqlDataProvider<ConnectionString=CompileTimeConnection, DatabaseVendor=Common.DatabaseProviderTypes.POSTGRESQL>
+
+type DataSource = Schema.dataContext
+
+let createDBContext (connection: string) = Schema.GetDataContext connection
 
 let stateServer =
     MailboxProcessor.Start
@@ -12,13 +25,12 @@ let stateServer =
                     let! msg = inbox.Receive()
 
                     match msg with
-                    | NewUser c ->
-                        printfn "Creating new user"
-                        //TODO create user w/ name = c
-                    | Print ->
-                        printfn "Printing all users"
-                       // TODO print all users on database
-                            
+                    | NewUser c -> printfn "Creating new user"
+                    // list of users available at: DataSource.``public.appuserEntity``
+                    //TODO create user w/ name = c
+                    | Print -> printfn "Printing all users"
+                    // TODO print all users on database
+
                     return! messageLoop ()
                 }
 

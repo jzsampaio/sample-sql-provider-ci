@@ -28,5 +28,5 @@ let migrateDb assembly (connection: string) =
 
 let migrateToLatest connection =
     let assembly = Assembly.GetExecutingAssembly()
-    
+
     connection |> migrateDb assembly

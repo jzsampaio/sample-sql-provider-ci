@@ -90,7 +90,7 @@ PGPASSWORD=admin pg_dump -U dbuser -h 127.0.0.1 -p 5433 -d demo -s -c -x -O --no
 - Load the sql dump on the compile time database
 
 #+begin_src 
-PGPASSWORD=admin psql -d postgres -U postgres < db-schema.sql  
+PGPASSWORD=admin psql -d postgres -U postgres -h 127.0.0.1 -p 5432 < db-schema.sql
 #+end_src
 
 - You can now build your project with:
