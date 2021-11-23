@@ -8,19 +8,38 @@ project w/ sql provider to:
 
 * Background
 
+** F#'s Type Providers
 F#'s type providers allows for usage of strong types when accessing
 structured data. Different than traditional ORMs that require the
 programmer to manually specify the type with which to read the data,
 the F# compiler infers a type from samples of the data.
 
 F# ships with a few type providers. To name a few: csv, json, xmls,
-and rdbms.
+and sql.
+
+** Strongly Type SQL
+
+By using an SQL type provider, instead of writing your SQL queries as
+strings, one can write them w/ F#'s computation expressions.
+
+Advantages:
+
+- auto-completion
+- compile checks
+
+After getting used to SQL type providers one will often wonder why
+mankind has ever opted to write SQL queries in raw strings. After all,
+relational databases do have strong type definition of table
+columns. Why would you write queries in a language that doesn't
+benefit from strong type guarantees?
+
+** Type providers and CI
 
 Note however, that the compiler must have access to samples of the
 data. This is easy with a csv and json: you just point it to a file
 committed on the repository.
 
-For SQL type providers, you need to grant the compiler access to a
+For a SQL type providers, you need to grant the compiler access to a
 running database. Furthermore, the database must have the schema that
 you expect to read on CI. This is easily done on the developer
 environment, but what about CI environments? Finally, how to build a
