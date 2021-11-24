@@ -3,7 +3,8 @@ open System
 open FSharp.Data.Sql
 
 type Action =
-    | NewUser of char
+    | NewUser of string
+    | Clear
     | Print
 
 [<Literal>]
@@ -15,7 +16,31 @@ type Schema =
 
 type DataSource = Schema.dataContext
 
+let connString = sprintf "Host=%s;Port=%s;Username=%s;Password=%s;Database=%s" "127.0.0.1" "5432" "postgres" "admin" "postgres"
+
 let createDBContext (connection: string) = Schema.GetDataContext connection
+
+let createUser (ctx: DataSource) name =
+    let newUser = ctx.Public.Appuser.``Create(name)``(name)
+    ctx.SubmitUpdates()
+    printfn "A new user was created: %A" newUser.Name
+
+let deleteUsers (ctx: DataSource) =
+    ctx.Public.Appuser
+        |> Seq.``delete all items from single table``
+        |> Async.RunSynchronously
+        |> ignore
+    ctx.SubmitUpdates()
+    printfn "Users deleted"
+
+let readUsers (ctx: DataSource) =
+    let users = query {
+        for user in ctx.Public.Appuser do
+            select (user)
+    }
+    match users |> Seq.toList with
+    | [] -> printfn "Empty list of users )'="
+    | users -> users |> List.iter (fun user -> printfn "User: %s" user.Name)
 
 let stateServer =
     MailboxProcessor.Start
@@ -23,13 +48,12 @@ let stateServer =
             let rec messageLoop () =
                 async {
                     let! msg = inbox.Receive()
+                    let ctx = createDBContext connString
 
                     match msg with
-                    | NewUser c -> printfn "Creating new user"
-                    // list of users available at: DataSource.``public.appuserEntity``
-                    //TODO create user w/ name = c
-                    | Print -> printfn "Printing all users"
-                    // TODO print all users on database
+                    | NewUser name -> createUser ctx name
+                    | Clear -> deleteUsers ctx
+                    | Print -> readUsers ctx
 
                     return! messageLoop ()
                 }
@@ -38,19 +62,20 @@ let stateServer =
 
 let rec client () =
     async {
-        printfn "Options:  any char to create new user; 1 to print; 0 to quit"
-        let key = Console.ReadKey(true)
-
+        printfn "Options: a string to create new user; 1 to print; 2 to delete; 0 to quit"
         return!
-            match key.KeyChar with
-            | '1' ->
-                stateServer.Post(Print)
-                client ()
-            | '0' ->
+            match Console.ReadLine() with
+            | "0" ->
                 printfn "Shutting down!"
                 async.Return()
-            | c ->
-                stateServer.Post(NewUser c)
+            | "1" ->
+                stateServer.Post(Print)
+                client ()
+            | "2" ->
+                stateServer.Post(Clear)
+                client ()
+            | name ->
+                stateServer.Post(NewUser name)
                 client ()
     }
 
