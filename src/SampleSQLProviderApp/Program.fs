@@ -7,6 +7,8 @@ type Action =
     | Clear
     | Print
 
+// The compile time connection remain hard coded. Even on production grade application.
+// The compile time connection must be available to your compiler.
 [<Literal>]
 let private CompileTimeConnection =
     "Host=127.0.0.1;Port=5432;Username=postgres;Password=admin;Database=postgres;"
@@ -16,6 +18,8 @@ type Schema =
 
 type DataSource = Schema.dataContext
 
+// The following is the runtime connection.
+// On a production grade application, you should read it from a secret location.
 let connString = sprintf "Host=%s;Port=%s;Username=%s;Password=%s;Database=%s" "127.0.0.1" "5432" "postgres" "admin" "postgres"
 
 let createDBContext (connection: string) = Schema.GetDataContext connection
