@@ -112,6 +112,7 @@ uses it to expose:
 We prefer relational databases over non relational ones. We think
 Postgresql is the best open source relational database.
 
+* Build Instructions
 ** Building the project locally
 
 - Start the database
@@ -130,7 +131,7 @@ dotnet paket restore
 - Apply the migrations
 
 #+begin_src
-dotnet run -p src/Migrations 
+dotnet run -p src/Migrations
 #+end_src
 
 - You can now build your project with:
@@ -174,7 +175,7 @@ We created a script that will:
 - Clear the environment of the host machine (changes to the repo as
   well as running containers)
 - Start a clean database
-- Apply migrations 
+- Apply migrations
 - Publish the dotnet executable assets
 - Build the docker image
     * The dockerfile has a command that copies executable assets from
@@ -200,12 +201,12 @@ compile database (5433).
 
 - Create an sql dump of your schema
 
-#+begin_src 
-PGPASSWORD=admin pg_dump -U dbuser -h 127.0.0.1 -p 5432 -d demo -s -c -x -O --no-comments > db-schema.sql  
+#+begin_src
+PGPASSWORD=admin pg_dump -U dbuser -h 127.0.0.1 -p 5432 -d demo -s -c -x -O --no-comments > db-schema.sql
 #+end_src
 
 - Load the sql dump on the compile time database
 
-#+begin_src 
+#+begin_src
 PGPASSWORD=admin psql -d postgres -U postgres -h 127.0.0.1 -p 5433 < db-schema.sql
 #+end_src
